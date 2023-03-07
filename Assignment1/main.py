@@ -9,14 +9,15 @@
 ### 3.	Think about what business analysis you can do with the data. And then, write your idea on a half page.                                             ###
 ###     Then under this half page, add what you did at 2.                                                                                                  ###
 ##############################################################################################################################################################
-
-from tabulate import tabulate
+import os
 import pandas as pd
+from tabulate import tabulate
+
 
 
 # Read the online retail data
-df0910 = pd.read_excel("online_retail_II.xlsx", sheet_name=0) # 2009-2010
-df1011 = pd.read_excel("online_retail_II.xlsx", sheet_name=1) # 2010-2011
+df0910 = pd.read_excel(os.path.join("data", "online_retail_II.xlsx"), sheet_name=0) # 2009-2010
+df1011 = pd.read_excel(os.path.join("data", "online_retail_II.xlsx"), sheet_name=1) # 2010-2011
 #df0910 = pd.read_excel("https://archive.ics.uci.edu/ml/machine-learning-databases/00502/online_retail_II.xlsx", sheet_name=0) 
 #df1011 = pd.read_excel("https://archive.ics.uci.edu/ml/machine-learning-databases/00502/online_retail_II.xlsx", sheet_name=1) 
 
