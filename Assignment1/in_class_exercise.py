@@ -1,5 +1,6 @@
 ##### Online Retail II Data Analysis on UCI Machine Learning Repository #####
 
+import datetime as dt
 import os
 import pandas as pd
 from tabulate import tabulate
@@ -36,3 +37,11 @@ df_val['Weekday'] = df_val['InvoiceDate'].dt.weekday # 0 Monday - 6 Sunday
 df_val = df_val.astype({"Year": "Int32", "Month": "Int32", "Day": "Int32", "Hour": "Int32", "Minute": "Int32", "Second": "Int32", "Weekday": "Int32"})
 print(df_val.dtypes)
 print(df_val.head())
+# creating a variable to measure recency of transactions
+present = dt.datetime(2011,12,31)
+df_val['Recency'] = present - df_val.groupby(['Customer ID'])['InvoiceDate'].transform(max)
+
+### Data preprocessing 3
+df_val.describe() # summary statistics
+
+# clean negative quantities and zero price
