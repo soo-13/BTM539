@@ -44,7 +44,7 @@ df_val['Recency'] = (present - df_val.groupby(['Customer ID'])['InvoiceDate'].tr
 print(df_val.describe()) # summary statistics
 df_val.drop(df_val[df_val['Quantity'] < 0].index, inplace=True) # clean negative quantities 
 df_val.drop(df_val[df_val['Price'] == 0].index, inplace=True)  # clean zero price
-df_val.to_csv(path_or_buf=os.path.join("/Users", "yeonsoo", "Desktop", "YS", "2023spring", "BTM539", "HW", "Assignment2", "data", "online_retail_II_preprocessed.csv")) # save the df as a csv file
+df_val.to_csv(path_or_buf=os.path.join("/Users", "yeonsoo", "Desktop", "YS", "2023spring", "BTM539", "HW", "Assignment2", "data", "online_retail_II_preprocessed.csv"), index=False) # save the df as a csv file
 ### Exploratory Data Analysis (EDA)
 # unique invoices (transactions), products, and customers & their distributions
 df_val = df_val.astype({"Customer ID": "O"})
