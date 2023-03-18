@@ -4,7 +4,6 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
-from tabulate import tabulate
 
 ### Study the dataset
 # read excel dataset with two sheets 
@@ -38,14 +37,14 @@ df_val['Second'] = df_val['InvoiceDate'].dt.second
 df_val['Weekday'] = df_val['InvoiceDate'].dt.weekday # 0 Monday - 6 Sunday
 df_val = df_val.astype({"Year": "Int32", "Month": "Int32", "Day": "Int32", "Hour": "Int32", "Minute": "Int32", "Second": "Int32", "Weekday": "Int32"})
 # creating a variable to measure recency of transactions
-present = dt.datetime(2011,12,31)
-df_val['Recency'] = present - df_val.groupby(['Customer ID'])['InvoiceDate'].transform(max)
+present = dt.datetime(2012,1,1)
+df_val['Recency'] = (present - df_val.groupby(['Customer ID'])['InvoiceDate'].transform(max)).dt.days
 
 ### Data preprocessing 3
 print(df_val.describe()) # summary statistics
 df_val.drop(df_val[df_val['Quantity'] < 0].index, inplace=True) # clean negative quantities 
 df_val.drop(df_val[df_val['Price'] == 0].index, inplace=True)  # clean zero price
-
+df_val.to_csv(path_or_buf=os.path.join("/Users", "yeonsoo", "Desktop", "YS", "2023spring", "BTM539", "HW", "Assignment2", "data", "online_retail_II_preprocessed.csv")) # save the df as a csv file
 ### Exploratory Data Analysis (EDA)
 # unique invoices (transactions), products, and customers & their distributions
 df_val = df_val.astype({"Customer ID": "O"})
