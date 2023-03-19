@@ -29,13 +29,13 @@ df_val = df_val.astype({"Customer ID": "Int32"}) # change customer ID dtypes to 
 df_val['InvoiceDate'] = pd.to_datetime(df_val['InvoiceDate'])# convert the invoice date and time varables (from string to datetime64)
 # extract year, month, day, hour, minute, second, and weekday
 df_val['Year'] = df_val['InvoiceDate'].dt.year
-df_val['Month'] = df_val['InvoiceDate'].dt.month
+df_val['Month'] = df_val['InvoiceDate'].dt.month_name()
 df_val['Day'] = df_val['InvoiceDate'].dt.day
 df_val['Hour'] = df_val['InvoiceDate'].dt.hour
 df_val['Minute'] = df_val['InvoiceDate'].dt.minute
 df_val['Second'] = df_val['InvoiceDate'].dt.second
-df_val['Weekday'] = df_val['InvoiceDate'].dt.weekday # 0 Monday - 6 Sunday
-df_val = df_val.astype({"Year": "Int32", "Month": "Int32", "Day": "Int32", "Hour": "Int32", "Minute": "Int32", "Second": "Int32", "Weekday": "Int32"})
+df_val['Weekday'] = df_val['InvoiceDate'].dt.strftime("%A") 
+df_val = df_val.astype({"Year": "Int32", "Day": "Int32", "Hour": "Int32", "Minute": "Int32", "Second": "Int32"})
 # creating a variable to measure recency of transactions
 present = dt.datetime(2012,1,1)
 df_val['Recency'] = (present - df_val.groupby(['Customer ID'])['InvoiceDate'].transform(max)).dt.days
