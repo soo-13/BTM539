@@ -1,5 +1,5 @@
 ##### RFM Anallysis #####
-
+import matplotlib.pyplot as plt
 import os 
 import pandas as pd
 
@@ -11,7 +11,7 @@ rec = df.groupby(['Customer ID']).mean()['Recency']
 freq = df.groupby(['Customer ID']).count()['Invoice'] # frequency number of purchases since the first purchase 
 # monetary value average spending per order
 df['Spending'] = df['Price']*df['Quantity']
-mon =  df.groupby(['Customer ID']).sum()['Spending'] # monetary value average spending per order
+mon =  df.groupby(['Customer ID']).mean()['Spending'] # monetary value average spending per order
 
 ### for each dimension, divide all customers into three groups evenly. 
 seg = [1]*(len(rec)//3) + [2]*(len(rec)- len(rec)//3*2) + [3]*(len(rec)//3) # score: 1 for lowest, 2 for medium, 3 for highest
@@ -31,6 +31,38 @@ df.loc[df['Customer ID'].isin(freq[freq['Freq_score']==3].index),'F_score'] = 3
 df.loc[df['Customer ID'].isin(mon[mon['MV_score']==2].index),'M_score'] = 2
 df.loc[df['Customer ID'].isin(mon[mon['MV_score']==3].index),'M_score'] = 3
 rfm = df.groupby(['R_score', 'F_score', 'M_score'])
+
+### Summarize their features
+pd.options.display.float_format = '{:.2f}'.format
+print("number of customers in each group")
+print(rfm.nunique()['Customer ID']) 
+print(rfm.nunique()['Customer ID']/rfm.nunique()['Customer ID'].sum()*100) # proportion 
+rfm.nunique()['Customer ID'].plot.bar()
+plt.show()
+
+print("number of countries in each group")
+print(rfm.nunique()['Country']) 
+print(rfm['Country'].apply(pd.Series.mode))
+tmp = df.groupby('Customer ID').max().get(['R_score', 'F_score', 'M_score', 'Country'])
+print(tmp.groupby(['R_score', 'F_score', 'M_score'])['Country'].apply(pd.Series.mode)) # which countries are the customers from
+#for i in range(3):
+#    for j in range(3):
+#        for k in range(3):
+#            print("Group{}{}{}: {}".format(i+1,j+1,k+1,df[df['R_score']==i+1][df['F_score']==j+1][df['M_score']==k+1]['Country'].unique().tolist()))
+
+print("which weekday were the purchases made most frequently?")
+tmp = df.groupby('Invoice').max().get(['R_score', 'F_score', 'M_score', 'Weekday'])
+print(tmp.groupby(['R_score', 'F_score', 'M_score'])['Weekday'].apply(pd.Series.mode))
+
+### each group's contribution to 
+'''
+print("contribution in aggrgated sales")
+contrib = rfm.sum()['Spending'].sort_values()
+print(contrib)
+contrib.plot.bar()
+plt.show()
+'''
+
 import pdb; pdb.set_trace()
 print(1)
 
