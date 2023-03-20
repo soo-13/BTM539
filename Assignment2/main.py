@@ -42,7 +42,6 @@ plt.show()
 
 print("number of countries in each group")
 print(rfm.nunique()['Country']) 
-print(rfm['Country'].apply(pd.Series.mode))
 tmp = df.groupby('Customer ID').max().get(['R_score', 'F_score', 'M_score', 'Country'])
 print(tmp.groupby(['R_score', 'F_score', 'M_score'])['Country'].apply(pd.Series.mode)) # which countries are the customers from
 #for i in range(3):
@@ -55,14 +54,11 @@ tmp = df.groupby('Invoice').max().get(['R_score', 'F_score', 'M_score', 'Weekday
 print(tmp.groupby(['R_score', 'F_score', 'M_score'])['Weekday'].apply(pd.Series.mode))
 
 ### each group's contribution to 
-'''
 print("contribution in aggrgated sales")
-contrib = rfm.sum()['Spending'].sort_values()
+contrib = rfm.sum()['Spending']
 print(contrib)
+print(contrib/contrib.sum()*100)
 contrib.plot.bar()
-plt.show()
-'''
 
-import pdb; pdb.set_trace()
-print(1)
+
 
