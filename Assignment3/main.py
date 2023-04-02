@@ -60,3 +60,11 @@ knn = KNeighborsClassifier().fit(X_train, y_train)
 knn_pred = knn.predict(X_test)
 
 ### performance evaluation
+y_preds = [dt_pred, rfc_pred, svm_pred, knn_pred]
+models = ['Decision Tree', 'Random Forest', 'SVM', 'KNN']
+for i in range(4):
+    print(models[i])
+    print(metrics.classification_report(y_test, y_preds[i], digits=3))
+
+    
+    
