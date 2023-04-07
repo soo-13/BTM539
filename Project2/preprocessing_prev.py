@@ -35,5 +35,6 @@ df_val = df_val.merge(amj, how='outer', on=df.columns.tolist()) # merge df_val a
 df_val.to_csv(os.path.join("Project2", "data", "agg_article_info.csv"), index=False) # save final data as csv file
 
 ### make a table showing observations for each Journal
+import pdb; pdb.set_trace()
 print(df_val.groupby('Journal Abbreviation').head())
 print(df_val.groupby('Journal Abbreviation').count())
