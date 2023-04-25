@@ -91,7 +91,7 @@ def main():
 
     dtfmx = pd.DataFrame(dtfm.toarray(), index= P_names, columns= dtm_md.get_feature_names_out())
     print(dtfmx.head())
-
+    '''
     # find optimal number of clusters
     explained_variance = []
     for num_topics in range(2,51):
@@ -170,9 +170,7 @@ def main():
             tmp['top_5_cols'] = tmp.apply(top_5_cols, axis=1)
             print("The top 5 topics per year category for the following journal: {}".format(journal))
             print(tmp['top_5_cols'])
-        
-    
-    import pdb; pdb.set_trace() 
+    '''
     ### latent semantic analysis (LSA) with gensim
     # DTM to DTL by document
     fin_words = dtm_md.inverse_transform(dtfm)
@@ -186,14 +184,14 @@ def main():
 
     coherence_values = []
     model_list = []
-    for n_topics in range(2,50):
+    for n_topics in range(2,30):
         model = models.LsiModel(wordfreq_doc, num_topics= n_topics, chunksize = 64, id2word = pp_dict)
         model_list.append(model)
         coherencemodel = CoherenceModel(model= model, texts= fin_words, dictionary= pp_dict, coherence= 'c_v')
         coherence_values.append(coherencemodel.get_coherence())
         print("{}-th process finished!!".format(n_topics-1))
 
-    x = range(2, 50, 1)
+    x = range(2,30)
     plt.plot (x, coherence_values)
     plt.xlabel("Number of Topics")
     plt.ylabel("Coherence score")
@@ -202,36 +200,32 @@ def main():
     
     opt_num_3 = np.argmax(coherence_values)+2
     print("Optimal number of topics using Gensim, coherence value: {}".format(opt_num_3))
-    
     model = model_list[opt_num_3 - 2]
-    # get the topic distribution for each document
-    topic_distributions = []
-    for doc in wordfreq_doc:
-        topic_distribution = model.get_document_topics(doc)
-        topic_distributions.append(topic_distribution)
-
-    # print the top 15 words for each topic
-    topics = model.show_topics(num_topics=opt_num_3, num_words=15, formatted=False)
-    for i, topic in enumerate(topics):
-        print("Topic {}: {}".format(i+1, [word[0] for word in topic[1]]))
+    with pd.option_context('display.max_colwidth', None):
+        print(pd.DataFrame(model.print_topics(num_words=15))) # get the topics
     
     opt_num_4 = max(np.where(coherence_values > 0.9*max(coherence_values))[0])+2
     print("Largest number of topics with coherence value with 90 percent of maximum or above: {}".format(opt_num_4))
-    
     model = model_list[opt_num_4 - 2]
-    # get the topic distribution for each document
-    topic_distributions = []
-    for doc in wordfreq_doc:
-        topic_distribution = model.get_document_topics(doc)
-        topic_distributions.append(topic_distribution)
-
-    # print the top 15 words for each topic
-    topics = model.show_topics(num_topics=opt_num_3, num_words=15, formatted=False)
-    for i, topic in enumerate(topics):
-        print("Topic {}: {}".format(i+1, [word[0] for word in topic[1]]))
+    with pd.option_context('display.max_colwidth', None):
+        print(pd.DataFrame(model.print_topics(num_words=15))) # get the topics
+    corpus_lsi = np.asarray(model[wordfreq_doc])[:,:,1] # (document, num_topic) distribution
+    # Tracking topic changes across years for each journal
+    df = pd.concat([NLP_finn, pd.DataFrame(corpus_lsi, columns=['topic'+ str(i+1) for i in range(opt_num_4)])], axis=1)
     
-    import pdb; pdb.set_trace()
+    def top_5_cols(row):
+        return row.nlargest(5).index.tolist()
     
+    # year variable in category - 1: 1991-1995, 2: 1996-2000, 3: 2001-2005, 4: 2006-2010, 5: 2011-2015, 6: 2016-2020, 7: 2021-2023
+    df['catYear'] = (df['Year']-1991)//5+1
+    with pd.option_context('display.max_colwidth', None):
+        for journal in df['Jabb'].unique():
+            tmp = df[df['Jabb']== journal]
+            tmp = tmp.drop('Year', axis=1)
+            tmp = tmp.groupby(['catYear']).mean()
+            tmp['top_5_cols'] = tmp.apply(top_5_cols, axis=1)
+            print("The top 5 topics per year category for the following journal: {}".format(journal))
+            print(tmp['top_5_cols'])
     
 if __name__ == "__main__":
     main()
